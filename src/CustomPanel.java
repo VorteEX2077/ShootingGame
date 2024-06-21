@@ -29,6 +29,8 @@ public class CustomPanel extends JPanel {
 
     int timer;
     boolean jumpAnimation;
+    int enemyHealth = 5;
+    int shootDistance;
 
     public CustomPanel() {
         setFocusable(true);
@@ -36,6 +38,7 @@ public class CustomPanel extends JPanel {
         enemyX = GameWindow.screenX - 100;
         setBackground(Color.darkGray);
         character = new Characters();
+        shootDistance = playerX + 200;
 
         addMouseListener(new MouseListener() {
             @Override
@@ -45,12 +48,12 @@ public class CustomPanel extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 isPlayerShooting = true;
+
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 isPlayerShooting = false;
-                //System.out.println("Relased");
             }
 
             @Override
@@ -101,7 +104,8 @@ public class CustomPanel extends JPanel {
         if (isPlayerRunning) {
             if (playerFrame >= character.getAnimationSize(Characters.RUNNING) - 1) playerFrame = 0;
             else playerFrame = playerFrame + 1;
-            g.drawImage(character.getAnimation(Characters.RUNNING).get(playerFrame), playerX, playerY, SOLIDER_WIDTH, SOLIDER_HEIGHT, null);
+            g.drawImage(character.getAnimation(Characters.RUNNING).get(playerFrame), playerX, playerY, SOLIDER_WIDTH,
+                    SOLIDER_HEIGHT, null);
         } else if (isPlayerJumping) {
             if (playerFrame >= character.getAnimationSize(Characters.JUMP) - 1) playerFrame = 0;
             else playerFrame = playerFrame + 1;
@@ -117,25 +121,35 @@ public class CustomPanel extends JPanel {
             //System.out.println(playerY + " " + (FLOOR_HEIGHT + SOLIDER_HEIGHT));
             if (playerY >= FLOOR_HEIGHT) playerY = FLOOR_HEIGHT;
 
-            g.drawImage(character.getAnimation(Characters.JUMP).get(playerFrame), playerX, playerY, SOLIDER_WIDTH, SOLIDER_HEIGHT, null);
+            g.drawImage(character.getAnimation(Characters.JUMP).get(playerFrame), playerX, playerY, SOLIDER_WIDTH,
+                    SOLIDER_HEIGHT, null);
         } else if (isPlayerDead) {
             if (playerFrame >= character.getAnimationSize(Characters.DEATH) - 1) {
                 playerFrame = 4;
             } else
                 playerFrame = playerFrame + 1;
-            g.drawImage(character.getAnimation(Characters.DEATH).get(playerFrame), playerX, playerY, SOLIDER_WIDTH, SOLIDER_HEIGHT, null);
+            g.drawImage(character.getAnimation(Characters.DEATH).get(playerFrame), playerX, playerY, SOLIDER_WIDTH,
+                    SOLIDER_HEIGHT, null);
         } else if (isPlayerShooting) {
             if (playerFrame >= character.getAnimationSize(Characters.SHOOT) - 1) {
                 playerFrame = 0;
             } else playerFrame = playerFrame + 1;
-            g.drawImage(character.getAnimation(Characters.SHOOT).get(playerFrame), playerX, playerY, SOLIDER_WIDTH, SOLIDER_HEIGHT, null);
+            g.drawImage(character.getAnimation(Characters.SHOOT).get(playerFrame), playerX, playerY, SOLIDER_WIDTH,
+                    SOLIDER_HEIGHT, null);
+            if (enemyX <= shootDistance) {
+                enemyHealth = enemyHealth - 1;
+            }
+
             isPlayerShooting = false;
-        } else  {
+        } else {
             if (playerFrame >= character.getAnimationSize(Characters.IDLE) - 1) playerFrame = 0;
             else playerFrame = playerFrame + 1;
-            g.drawImage(character.getAnimation(Characters.IDLE).get(playerFrame), playerX, playerY, SOLIDER_WIDTH, SOLIDER_HEIGHT, null);
+            g.drawImage(character.getAnimation(Characters.IDLE).get(playerFrame), playerX, playerY, SOLIDER_WIDTH,
+                    SOLIDER_HEIGHT, null);
         }
         /* END OF SOLIDER ANIMATION */
+        shootDistance = playerX + 400;
+        System.out.println("enemyX: " + enemyX + " playerX: " + playerX + " enemy health: " + enemyHealth);
     }
 
     @Override
@@ -147,9 +161,12 @@ public class CustomPanel extends JPanel {
         if (enemyFrame >= character.getAnimationSize(Characters.ENEMY_WALKING) - 1) {
             enemyFrame = 0;
         }
-        g.drawImage(character.getAnimation(Characters.ENEMY_WALKING).get(enemyFrame), enemyX, enemyY, 80, 80, null);
-        enemyX = enemyX - 3;
-        enemyFrame = enemyFrame + 1;
+        if(enemyHealth > 0) {
+            g.drawImage(character.getAnimation(Characters.ENEMY_WALKING).get(enemyFrame), enemyX, enemyY, 80,
+                    80, null);
+            enemyX = enemyX - 3;
+            enemyFrame = enemyFrame + 1;
+        }
 
         // The floor line
         g.setColor(Color.red);
