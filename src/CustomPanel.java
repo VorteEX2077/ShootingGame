@@ -9,7 +9,7 @@ public class CustomPanel extends JPanel {
 
     public static final int SOLIDER_HEIGHT = 180;
     public static final int SOLIDER_WIDTH = 180;
-    public static final int FLOOR_HEIGHT = GameWindow.screenY * 50 / 100;
+    public static final int FLOOR_HEIGHT = GameWindow.screenY / 2;
 
     Characters character;
 
@@ -149,7 +149,7 @@ public class CustomPanel extends JPanel {
         }
         /* END OF SOLIDER ANIMATION */
         shootDistance = playerX + 400;
-        System.out.println("enemyX: " + enemyX + " playerX: " + playerX + " enemy health: " + enemyHealth);
+        //System.out.println("enemyX: " + enemyX + " playerX: " + playerX + " enemy health: " + enemyHealth);
     }
 
     @Override
@@ -167,10 +167,16 @@ public class CustomPanel extends JPanel {
             enemyX = enemyX - 3;
             enemyFrame = enemyFrame + 1;
         }
+        /* enemy health bar */
+        if(enemyHealth < 5 && enemyHealth > 0){
+            g.setColor(Color.green);
+            g.fillRect(enemyX,enemyY - 40, enemyHealth * 16,10);
+            g.setColor(Color.black);
+            g.drawRect(enemyX,enemyY - 40, 80,10);
+        }
 
-        // The floor line
-        g.setColor(Color.red);
-        g.drawLine(0, FLOOR_HEIGHT + SOLIDER_HEIGHT, GameWindow.screenX, FLOOR_HEIGHT + SOLIDER_HEIGHT);
-
+        // The floor
+      g.drawImage(character.getAnimation(Characters.TILES).get(0),100,FLOOR_HEIGHT + SOLIDER_HEIGHT - 10, 500, 100,
+              null);
     }
 }

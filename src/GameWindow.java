@@ -28,8 +28,8 @@ public class GameWindow extends JFrame {
 
         screenX = Toolkit.getDefaultToolkit().getScreenSize().width;
         screenY = Toolkit.getDefaultToolkit().getScreenSize().height;
-        screenX = 1280;
-        screenY = 720;
+//        screenX = 1280;
+//        screenY = 720;
 
         customPanelObject = new CustomPanel();
         add(customPanelObject);
@@ -41,7 +41,7 @@ public class GameWindow extends JFrame {
         // OR
 
         setSize(screenX, screenY);
-        //setResizable(false);
+        setResizable(false);
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

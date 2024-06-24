@@ -19,6 +19,7 @@ public class Characters {
     public static final int SHOOT = 4;
     public static final int ENEMY_IDLE = 5;
     public static final int ENEMY_WALKING = 6;
+    public static final int TILES = 7;
 
     public static int max_images;
     public static final int NUM_ANIMATION_COUNT = 10;
@@ -32,6 +33,7 @@ public class Characters {
         loadImages("Shooting", SHOOT);
         loadImages("EnemyIdle", ENEMY_IDLE);
         loadImages("EnemyWalking", ENEMY_WALKING);
+        loadImages("TileMap", TILES);
     }
 
     /**
