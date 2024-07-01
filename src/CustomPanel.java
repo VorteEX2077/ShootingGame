@@ -31,11 +31,14 @@ public class CustomPanel extends JPanel {
     boolean jumpAnimation;
     int enemyHealth = 5;
     int shootDistance;
+    int tile3 = 1300;
+    int tileWidth = 500;
+    boolean isenemyEnd;
 
     public CustomPanel() {
         setFocusable(true);
         enemyY = FLOOR_HEIGHT + 100;
-        enemyX = GameWindow.screenX - 100;
+        enemyX = tile3 + tileWidth - 100;
         setBackground(Color.darkGray);
         character = new Characters();
         shootDistance = playerX + 200;
@@ -110,7 +113,7 @@ public class CustomPanel extends JPanel {
             if (playerFrame >= character.getAnimationSize(Characters.JUMP) - 1) playerFrame = 0;
             else playerFrame = playerFrame + 1;
             playerY = FLOOR_HEIGHT - timer;
-            playerX = playerX + timer / 3;
+            playerX = playerX + timer / 2;
             if (timer == 60)
                 jumpAnimation = false;
             else if (timer <= -10)
@@ -152,31 +155,53 @@ public class CustomPanel extends JPanel {
         //System.out.println("enemyX: " + enemyX + " playerX: " + playerX + " enemy health: " + enemyHealth);
     }
 
+    private void enemyAnimation(Graphics g){
+
+        if (enemyFrame >= character.getAnimationSize(Characters.ENEMY_WALKING) - 1) {
+            enemyFrame = 0;
+        }
+        if (enemyHealth > 0) {
+            g.drawImage(character.getAnimation(Characters.ENEMY_WALKING).get(enemyFrame),
+                    enemyX, enemyY, 80, 80, null);
+
+            if (enemyX <= tile3) {
+                isenemyEnd = true;
+            }
+            if (isenemyEnd) {
+                enemyX = enemyX + 3;
+                if (enemyX >= tileWidth + tile3 - 100) {
+                    isenemyEnd = false;
+                }
+            } else {
+                enemyX = enemyX - 3;
+            }
+
+            enemyFrame = enemyFrame + 1;
+        }
+        /* enemy health bar */
+        if (enemyHealth < 5 && enemyHealth > 0) {
+            g.setColor(Color.green);
+            g.fillRect(enemyX, enemyY - 40, enemyHealth * 16, 10);
+            g.setColor(Color.black);
+            g.drawRect(enemyX, enemyY - 40, 80, 10);
+        }
+
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         soliderAnimation(g);
+        enemyAnimation(g);
 
-        if (enemyFrame >= character.getAnimationSize(Characters.ENEMY_WALKING) - 1) {
-            enemyFrame = 0;
-        }
-        if(enemyHealth > 0) {
-            g.drawImage(character.getAnimation(Characters.ENEMY_WALKING).get(enemyFrame), enemyX, enemyY, 80,
-                    80, null);
-            enemyX = enemyX - 3;
-            enemyFrame = enemyFrame + 1;
-        }
-        /* enemy health bar */
-        if(enemyHealth < 5 && enemyHealth > 0){
-            g.setColor(Color.green);
-            g.fillRect(enemyX,enemyY - 40, enemyHealth * 16,10);
-            g.setColor(Color.black);
-            g.drawRect(enemyX,enemyY - 40, 80,10);
-        }
-
+        /* TODO: DETECT IF THE PLAYER IS ON THE TILE OR NOT */
         // The floor
-      g.drawImage(character.getAnimation(Characters.TILES).get(0),100,FLOOR_HEIGHT + SOLIDER_HEIGHT - 10, 500, 100,
-              null);
+        g.drawImage(character.getAnimation(Characters.TILES).get(0), 100,
+                FLOOR_HEIGHT + SOLIDER_HEIGHT - 10, tileWidth, 100, null);
+        g.drawImage(character.getAnimation(Characters.TILES).get(0), 700,
+                FLOOR_HEIGHT + SOLIDER_HEIGHT - 10, tileWidth, 100, null);
+        g.drawImage(character.getAnimation(Characters.TILES).get(0), tile3,
+                FLOOR_HEIGHT + SOLIDER_HEIGHT - 10, tileWidth, 100, null);
     }
 }
