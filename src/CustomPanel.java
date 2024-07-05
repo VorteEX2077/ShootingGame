@@ -33,7 +33,9 @@ public class CustomPanel extends JPanel {
     int shootDistance;
     int tile3 = 1300;
     int tileWidth = 500;
-    boolean isenemyEnd;
+    boolean isEnemyEnd;
+    boolean isPlayerOnTile = true;
+    int[][] tiles = new int[3][2];  // 2D Array Initialization
 
     public CustomPanel() {
         setFocusable(true);
@@ -43,6 +45,11 @@ public class CustomPanel extends JPanel {
         character = new Characters();
         shootDistance = playerX + 200;
 
+        initTiles();
+        initListeners();
+    }
+
+    private void initListeners(){
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -51,7 +58,6 @@ public class CustomPanel extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 isPlayerShooting = true;
-
             }
 
             @Override
@@ -102,6 +108,13 @@ public class CustomPanel extends JPanel {
         });
     }
 
+    private void initTiles(){
+        for(int i = 0; i <= 2 ; i++){
+            tiles[i][0] = (i * (tileWidth + 100)) + 100;
+            tiles[i][1] = FLOOR_HEIGHT + SOLIDER_HEIGHT - 10;
+        }
+    }
+
     private void soliderAnimation(Graphics g) {
         /* SOLIDER ANIMATION */
         if (isPlayerRunning) {
@@ -113,7 +126,7 @@ public class CustomPanel extends JPanel {
             if (playerFrame >= character.getAnimationSize(Characters.JUMP) - 1) playerFrame = 0;
             else playerFrame = playerFrame + 1;
             playerY = FLOOR_HEIGHT - timer;
-            playerX = playerX + timer / 2;
+            playerX = playerX + timer - 7;
             if (timer == 60)
                 jumpAnimation = false;
             else if (timer <= -10)
@@ -165,12 +178,12 @@ public class CustomPanel extends JPanel {
                     enemyX, enemyY, 80, 80, null);
 
             if (enemyX <= tile3) {
-                isenemyEnd = true;
+                isEnemyEnd = true;
             }
-            if (isenemyEnd) {
+            if (isEnemyEnd) {
                 enemyX = enemyX + 3;
                 if (enemyX >= tileWidth + tile3 - 100) {
-                    isenemyEnd = false;
+                    isEnemyEnd = false;
                 }
             } else {
                 enemyX = enemyX - 3;
@@ -188,20 +201,35 @@ public class CustomPanel extends JPanel {
 
     }
 
+    private boolean checkPlayerOnTile() {
+        for(int i = 0; i < tiles.length; i++){
+//            System.out.println(tiles[i][0]);
+
+            if((playerX + SOLIDER_WIDTH) >= tiles[i][0] && (playerX + SOLIDER_WIDTH) <= (tiles[i][0] + tileWidth)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         soliderAnimation(g);
         enemyAnimation(g);
-
+        isPlayerOnTile = checkPlayerOnTile();
+        System.out.println("player on tile: " + isPlayerOnTile);
         /* TODO: DETECT IF THE PLAYER IS ON THE TILE OR NOT */
-        // The floor
-        g.drawImage(character.getAnimation(Characters.TILES).get(0), 100,
-                FLOOR_HEIGHT + SOLIDER_HEIGHT - 10, tileWidth, 100, null);
-        g.drawImage(character.getAnimation(Characters.TILES).get(0), 700,
-                FLOOR_HEIGHT + SOLIDER_HEIGHT - 10, tileWidth, 100, null);
-        g.drawImage(character.getAnimation(Characters.TILES).get(0), tile3,
-                FLOOR_HEIGHT + SOLIDER_HEIGHT - 10, tileWidth, 100, null);
+
+        g.setColor(Color.MAGENTA);
+        g.drawRect(playerX, playerY, SOLIDER_WIDTH, SOLIDER_HEIGHT);
+
+        for(int i = 0; i <= 2; i++){
+            g.setColor(Color.red);
+            g.drawLine(tiles[i][0],tiles[i][1] - 50, tiles[i][0] + tileWidth, tiles[i][1] - 50);
+            g.drawImage(character.getAnimation(Characters.TILES).get(0), tiles[i][0],
+                    tiles[i][1], tileWidth, 100, null);
+        }
     }
 }
