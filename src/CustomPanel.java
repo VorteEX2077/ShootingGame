@@ -7,8 +7,8 @@ import java.awt.event.MouseListener;
 
 public class CustomPanel extends JPanel {
 
-    public static final int SOLIDER_HEIGHT = 180;
-    public static final int SOLIDER_WIDTH = 180;
+    public static final int SOLIDER_HEIGHT = 100;
+    public static final int SOLIDER_WIDTH = 100;
     public static final int FLOOR_HEIGHT = GameWindow.screenY / 2;
 
     Characters character;
@@ -88,7 +88,7 @@ public class CustomPanel extends JPanel {
                 isPlayerDead = false;
 
                 if (e.getKeyCode() == KeyEvent.VK_D) {
-                    playerX = playerX + 3;
+                   // playerX = playerX + 3;
                     playerY = FLOOR_HEIGHT;
                     isPlayerRunning = true;
                 } else if (e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -117,10 +117,11 @@ public class CustomPanel extends JPanel {
 
     private void soliderAnimation(Graphics g) {
         /* SOLIDER ANIMATION */
+        System.out.println("PlayerX: " + playerX);
         if (isPlayerRunning) {
             if (playerFrame >= character.getAnimationSize(Characters.RUNNING) - 1) playerFrame = 0;
             else playerFrame = playerFrame + 1;
-            g.drawImage(character.getAnimation(Characters.RUNNING).get(playerFrame), playerX, playerY, SOLIDER_WIDTH,
+            g.drawImage(character.getAnimation(Characters.RUNNING).get(playerFrame), playerX+=4, playerY, SOLIDER_WIDTH,
                     SOLIDER_HEIGHT, null);
         } else if (isPlayerJumping) {
             if (playerFrame >= character.getAnimationSize(Characters.JUMP) - 1) playerFrame = 0;
@@ -219,7 +220,7 @@ public class CustomPanel extends JPanel {
         soliderAnimation(g);
         enemyAnimation(g);
         isPlayerOnTile = checkPlayerOnTile();
-        System.out.println("player on tile: " + isPlayerOnTile);
+        //System.out.println("player on tile: " + isPlayerOnTile);
         /* TODO: DETECT IF THE PLAYER IS ON THE TILE OR NOT */
 
         g.setColor(Color.MAGENTA);
