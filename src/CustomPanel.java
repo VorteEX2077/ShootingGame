@@ -36,12 +36,14 @@ public class CustomPanel extends JPanel {
     boolean isEnemyEnd;
     boolean isPlayerOnTile = true;
     int[][] tiles = new int[3][2];  // 2D Array Initialization
+    Assets assets;
 
     public CustomPanel() {
         setFocusable(true);
         enemyY = FLOOR_HEIGHT + 100;
         enemyX = tile3 + tileWidth - 100;
         setBackground(Color.darkGray);
+        assets = new Assets();
         character = new Characters();
         shootDistance = playerX + 200;
 
@@ -49,7 +51,7 @@ public class CustomPanel extends JPanel {
         initListeners();
     }
 
-    private void initListeners(){
+    private void initListeners() {
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -88,7 +90,7 @@ public class CustomPanel extends JPanel {
                 isPlayerDead = false;
 
                 if (e.getKeyCode() == KeyEvent.VK_D) {
-                   // playerX = playerX + 3;
+                    // playerX = playerX + 3;
                     playerY = FLOOR_HEIGHT;
                     isPlayerRunning = true;
                 } else if (e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -108,8 +110,8 @@ public class CustomPanel extends JPanel {
         });
     }
 
-    private void initTiles(){
-        for(int i = 0; i <= 2 ; i++){
+    private void initTiles() {
+        for (int i = 0; i <= 2; i++) {
             tiles[i][0] = (i * (tileWidth + 100)) + 100;
             tiles[i][1] = FLOOR_HEIGHT + SOLIDER_HEIGHT - 10;
         }
@@ -121,7 +123,7 @@ public class CustomPanel extends JPanel {
         if (isPlayerRunning) {
             if (playerFrame >= character.getAnimationSize(Characters.RUNNING) - 1) playerFrame = 0;
             else playerFrame = playerFrame + 1;
-            g.drawImage(character.getAnimation(Characters.RUNNING).get(playerFrame), playerX+=4, playerY, SOLIDER_WIDTH,
+            g.drawImage(character.getAnimation(Characters.RUNNING).get(playerFrame), playerX += 4, playerY, SOLIDER_WIDTH,
                     SOLIDER_HEIGHT, null);
         } else if (isPlayerJumping) {
             if (playerFrame >= character.getAnimationSize(Characters.JUMP) - 1) playerFrame = 0;
@@ -150,7 +152,11 @@ public class CustomPanel extends JPanel {
         } else if (isPlayerShooting) {
             if (playerFrame >= character.getAnimationSize(Characters.SHOOT) - 1) {
                 playerFrame = 0;
-            } else playerFrame = playerFrame + 1;
+            } else {
+                playerFrame = playerFrame + 1;
+            }
+            g.drawImage(assets.bullet, playerX + SOLIDER_WIDTH, playerY + 25, 25, 25, null);
+
             g.drawImage(character.getAnimation(Characters.SHOOT).get(playerFrame), playerX, playerY, SOLIDER_WIDTH,
                     SOLIDER_HEIGHT, null);
             if (enemyX <= shootDistance) {
@@ -169,7 +175,7 @@ public class CustomPanel extends JPanel {
         //System.out.println("enemyX: " + enemyX + " playerX: " + playerX + " enemy health: " + enemyHealth);
     }
 
-    private void enemyAnimation(Graphics g){
+    private void enemyAnimation(Graphics g) {
 
         if (enemyFrame >= character.getAnimationSize(Characters.ENEMY_WALKING) - 1) {
             enemyFrame = 0;
@@ -203,10 +209,10 @@ public class CustomPanel extends JPanel {
     }
 
     private boolean checkPlayerOnTile() {
-        for(int i = 0; i < tiles.length; i++){
+        for (int i = 0; i < tiles.length; i++) {
 //            System.out.println(tiles[i][0]);
 
-            if((playerX + SOLIDER_WIDTH) >= tiles[i][0] && (playerX + SOLIDER_WIDTH) <= (tiles[i][0] + tileWidth)){
+            if ((playerX + SOLIDER_WIDTH) >= tiles[i][0] && (playerX + SOLIDER_WIDTH) <= (tiles[i][0] + tileWidth)) {
                 return true;
             }
         }
@@ -226,9 +232,9 @@ public class CustomPanel extends JPanel {
         g.setColor(Color.MAGENTA);
         g.drawRect(playerX, playerY, SOLIDER_WIDTH, SOLIDER_HEIGHT);
 
-        for(int i = 0; i <= 2; i++){
+        for (int i = 0; i <= 2; i++) {
             g.setColor(Color.red);
-            g.drawLine(tiles[i][0],tiles[i][1] - 50, tiles[i][0] + tileWidth, tiles[i][1] - 50);
+            g.drawLine(tiles[i][0], tiles[i][1] - 50, tiles[i][0] + tileWidth, tiles[i][1] - 50);
             g.drawImage(character.getAnimation(Characters.TILES).get(0), tiles[i][0],
                     tiles[i][1], tileWidth, 100, null);
         }
