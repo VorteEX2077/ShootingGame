@@ -35,12 +35,13 @@ public class CustomPanel extends JPanel {
     int tileWidth = 500;
     boolean isEnemyEnd;
     boolean isPlayerOnTile = true;
+    String leftOrRight;
     int[][] tiles = new int[3][2];  // 2D Array Initialization
     Assets assets;
 
     public CustomPanel() {
         setFocusable(true);
-        enemyY = FLOOR_HEIGHT + 100;
+        enemyY = FLOOR_HEIGHT;
         enemyX = tile3 + tileWidth - 100;
         setBackground(Color.darkGray);
         assets = new Assets();
@@ -93,6 +94,7 @@ public class CustomPanel extends JPanel {
                     // playerX = playerX + 3;
                     playerY = FLOOR_HEIGHT;
                     isPlayerRunning = true;
+                    leftOrRight = "RIGHT";
                 } else if (e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_SPACE) {
                     isPlayerJumping = true;
                     jumpAnimation = true;
@@ -100,6 +102,11 @@ public class CustomPanel extends JPanel {
                 } else if (e.getKeyCode() == KeyEvent.VK_G) {
                     playerFrame = 0;
                     isPlayerDead = true;
+                }
+                else if (e.getKeyCode() == KeyEvent.VK_A){
+                    leftOrRight = "LEFT";
+                    isPlayerRunning = true;
+                    playerY = FLOOR_HEIGHT;
                 }
             }
 
@@ -123,8 +130,14 @@ public class CustomPanel extends JPanel {
         if (isPlayerRunning) {
             if (playerFrame >= character.getAnimationSize(Characters.RUNNING) - 1) playerFrame = 0;
             else playerFrame = playerFrame + 1;
-            g.drawImage(character.getAnimation(Characters.RUNNING).get(playerFrame), playerX += 4, playerY, SOLIDER_WIDTH,
-                    SOLIDER_HEIGHT, null);
+            if(leftOrRight == "RIGHT") {
+                g.drawImage(character.getAnimation(Characters.RUNNING).get(playerFrame), playerX += 4, playerY, SOLIDER_WIDTH,
+                        SOLIDER_HEIGHT, null);
+            }
+            else{
+                g.drawImage(character.getAnimation(Characters.RUNNING).get(playerFrame), playerX -= 4, playerY, SOLIDER_WIDTH,
+                        SOLIDER_HEIGHT, null);
+            }
         } else if (isPlayerJumping) {
             if (playerFrame >= character.getAnimationSize(Characters.JUMP) - 1) playerFrame = 0;
             else playerFrame = playerFrame + 1;
@@ -155,7 +168,7 @@ public class CustomPanel extends JPanel {
             } else {
                 playerFrame = playerFrame + 1;
             }
-            g.drawImage(assets.bullet, playerX + SOLIDER_WIDTH, playerY + 25, 25, 25, null);
+            g.drawImage(assets.bullet, playerX + SOLIDER_WIDTH, playerY + 33, 25, 25, null);
 
             g.drawImage(character.getAnimation(Characters.SHOOT).get(playerFrame), playerX, playerY, SOLIDER_WIDTH,
                     SOLIDER_HEIGHT, null);
@@ -182,7 +195,7 @@ public class CustomPanel extends JPanel {
         }
         if (enemyHealth > 0) {
             g.drawImage(character.getAnimation(Characters.ENEMY_WALKING).get(enemyFrame),
-                    enemyX, enemyY, 80, 80, null);
+                    enemyX, enemyY, SOLIDER_WIDTH, SOLIDER_HEIGHT, null);
 
             if (enemyX <= tile3) {
                 isEnemyEnd = true;
@@ -205,7 +218,6 @@ public class CustomPanel extends JPanel {
             g.setColor(Color.black);
             g.drawRect(enemyX, enemyY - 40, 80, 10);
         }
-
     }
 
     private boolean checkPlayerOnTile() {
@@ -226,11 +238,14 @@ public class CustomPanel extends JPanel {
         soliderAnimation(g);
         enemyAnimation(g);
         isPlayerOnTile = checkPlayerOnTile();
-        //System.out.println("player on tile: " + isPlayerOnTile);
+        System.out.println("player on tile: " + isPlayerOnTile);
         /* TODO: DETECT IF THE PLAYER IS ON THE TILE OR NOT */
 
         g.setColor(Color.MAGENTA);
         g.drawRect(playerX, playerY, SOLIDER_WIDTH, SOLIDER_HEIGHT);
+        g.setColor(Color.blue);
+        g.drawRect(enemyX, enemyY, SOLIDER_WIDTH, SOLIDER_HEIGHT);
+//        System.out.println(FLOOR_HEIGHT +" "+ playerY +" "+ enemyY);
 
         for (int i = 0; i <= 2; i++) {
             g.setColor(Color.red);
