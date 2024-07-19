@@ -241,12 +241,12 @@ public class CustomPanel extends JPanel {
         System.out.println("player on tile: " + isPlayerOnTile);
         /* TODO: DETECT IF THE PLAYER IS ON THE TILE OR NOT */
 
+        /* Bounding boxes for testing */
         g.setColor(Color.MAGENTA);
         g.drawRect(playerX, playerY, SOLIDER_WIDTH, SOLIDER_HEIGHT);
         g.setColor(Color.blue);
         g.drawRect(enemyX, enemyY, SOLIDER_WIDTH, SOLIDER_HEIGHT);
 //        System.out.println(FLOOR_HEIGHT +" "+ playerY +" "+ enemyY);
-
         for (int i = 0; i <= 2; i++) {
             g.setColor(Color.red);
             g.drawLine(tiles[i][0], tiles[i][1] - 50, tiles[i][0] + tileWidth, tiles[i][1] - 50);
