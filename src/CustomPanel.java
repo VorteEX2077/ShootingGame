@@ -160,8 +160,8 @@ public class CustomPanel extends JPanel {
                 playerFrame = 4;
             } else
                 playerFrame = playerFrame + 1;
-            g.drawImage(character.getAnimation(Characters.DEATH).get(playerFrame), playerX, playerY, SOLIDER_WIDTH,
-                    SOLIDER_HEIGHT, null);
+            g.drawImage(character.getAnimation(Characters.DEATH).get(playerFrame), playerX, playerY + 50, 150,
+                    50, null);
         } else if (isPlayerShooting) {
             if (playerFrame >= character.getAnimationSize(Characters.SHOOT) - 1) {
                 playerFrame = 0;
@@ -217,6 +217,9 @@ public class CustomPanel extends JPanel {
             g.fillRect(enemyX, enemyY - 40, enemyHealth * 16, 10);
             g.setColor(Color.black);
             g.drawRect(enemyX, enemyY - 40, 80, 10);
+        }
+        if(playerX + SOLIDER_WIDTH >= enemyX){
+            isPlayerDead = true;
         }
     }
 
