@@ -102,8 +102,7 @@ public class CustomPanel extends JPanel {
                 } else if (e.getKeyCode() == KeyEvent.VK_G) {
                     playerFrame = 0;
                     isPlayerDead = true;
-                }
-                else if (e.getKeyCode() == KeyEvent.VK_A){
+                } else if (e.getKeyCode() == KeyEvent.VK_A) {
                     leftOrRight = "LEFT";
                     isPlayerRunning = true;
                     playerY = FLOOR_HEIGHT;
@@ -130,11 +129,10 @@ public class CustomPanel extends JPanel {
         if (isPlayerRunning) {
             if (playerFrame >= character.getAnimationSize(Characters.RUNNING) - 1) playerFrame = 0;
             else playerFrame = playerFrame + 1;
-            if(leftOrRight == "RIGHT") {
+            if (leftOrRight == "RIGHT") {
                 g.drawImage(character.getAnimation(Characters.RUNNING).get(playerFrame), playerX += 4, playerY, SOLIDER_WIDTH,
                         SOLIDER_HEIGHT, null);
-            }
-            else{
+            } else {
                 g.drawImage(character.getAnimation(Characters.RUNNING).get(playerFrame), playerX -= 4, playerY, SOLIDER_WIDTH,
                         SOLIDER_HEIGHT, null);
             }
@@ -155,13 +153,6 @@ public class CustomPanel extends JPanel {
 
             g.drawImage(character.getAnimation(Characters.JUMP).get(playerFrame), playerX, playerY, SOLIDER_WIDTH,
                     SOLIDER_HEIGHT, null);
-        } else if (isPlayerDead) {
-            if (playerFrame >= character.getAnimationSize(Characters.DEATH) - 1) {
-                playerFrame = 4;
-            } else
-                playerFrame = playerFrame + 1;
-            g.drawImage(character.getAnimation(Characters.DEATH).get(playerFrame), playerX, playerY + 50, 150,
-                    50, null);
         } else if (isPlayerShooting) {
             if (playerFrame >= character.getAnimationSize(Characters.SHOOT) - 1) {
                 playerFrame = 0;
@@ -177,6 +168,11 @@ public class CustomPanel extends JPanel {
             }
 
             isPlayerShooting = false;
+        } else if(!isPlayerOnTile) {
+            if(playerY < GameWindow.screenY) {
+                g.drawImage(character.getAnimation(Characters.FALL).get(0), playerX, playerY += 10, SOLIDER_WIDTH,
+                        SOLIDER_HEIGHT, null);
+            }
         } else {
             if (playerFrame >= character.getAnimationSize(Characters.IDLE) - 1) playerFrame = 0;
             else playerFrame = playerFrame + 1;
@@ -218,16 +214,15 @@ public class CustomPanel extends JPanel {
             g.setColor(Color.black);
             g.drawRect(enemyX, enemyY - 40, 80, 10);
         }
-        if(playerX + SOLIDER_WIDTH >= enemyX){
-            isPlayerDead = true;
-        }
+
     }
 
     private boolean checkPlayerOnTile() {
         for (int i = 0; i < tiles.length; i++) {
 //            System.out.println(tiles[i][0]);
 
-            if ((playerX + SOLIDER_WIDTH) >= tiles[i][0] && (playerX + SOLIDER_WIDTH) <= (tiles[i][0] + tileWidth)) {
+            if ((playerX + SOLIDER_WIDTH / 2) >= tiles[i][0]
+                    && (playerX + SOLIDER_WIDTH / 2) <= (tiles[i][0] + tileWidth)) {
                 return true;
             }
         }
@@ -238,11 +233,23 @@ public class CustomPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        soliderAnimation(g);
+        if (playerX + SOLIDER_WIDTH >= enemyX) {
+            isPlayerDead = true;
+            if (playerFrame >= character.getAnimationSize(Characters.DEATH) - 1) {
+                playerFrame = 4;
+                isGameOver = true;
+            } else
+                playerFrame = playerFrame + 1;
+            g.drawImage(character.getAnimation(Characters.DEATH).get(playerFrame), playerX, playerY + 50, 150,
+                    50, null);
+        } else {
+            soliderAnimation(g);
+        }
         enemyAnimation(g);
+
         isPlayerOnTile = checkPlayerOnTile();
         System.out.println("player on tile: " + isPlayerOnTile);
-        /* TODO: DETECT IF THE PLAYER IS ON THE TILE OR NOT */
+        /* begin falling animation */
 
         /* Bounding boxes for testing */
         g.setColor(Color.MAGENTA);

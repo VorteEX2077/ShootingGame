@@ -7,6 +7,7 @@ public class Assets {
 
     int a;
     public BufferedImage bullet;
+
     public Assets() {
         int a = 10;
         URL assets = getClass().getResource("other/muzzle.png");
