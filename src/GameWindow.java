@@ -3,7 +3,7 @@ import java.awt.*;
 
 public class GameWindow extends JFrame {
 
-    CustomPanel customPanelObject;
+    GamePanel gamePanelObject;
     JButton buttonNew = new JButton();
     Runnable runnable;
     Thread gameThread;
@@ -16,10 +16,10 @@ public class GameWindow extends JFrame {
             @Override
             public void run() {
                 lastTimeInMillis = System.currentTimeMillis();
-                while (!customPanelObject.isGameOver) {
+                while (!gamePanelObject.isGameOver) {
                     if (System.currentTimeMillis() - lastTimeInMillis >= 100) {
 
-                        customPanelObject.repaint();
+                        gamePanelObject.repaint();
                         lastTimeInMillis = System.currentTimeMillis();
                     }
                 }
@@ -28,11 +28,11 @@ public class GameWindow extends JFrame {
 
         screenX = Toolkit.getDefaultToolkit().getScreenSize().width;
         screenY = Toolkit.getDefaultToolkit().getScreenSize().height;
-//        screenX = 1280;
-//        screenY = 720;
+        screenX = 1280;
+        screenY = 720;
 
-        customPanelObject = new CustomPanel();
-        add(customPanelObject);
+        gamePanelObject = new GamePanel();
+        add(gamePanelObject);
 
 //        Dimension dim;
 //        Toolkit myToolkit = Toolkit.getDefaultToolkit();
@@ -41,8 +41,10 @@ public class GameWindow extends JFrame {
         // OR
 
         setSize(screenX, screenY);
-        setResizable(false);
+//        setExtendedState(JFrame.MAXIMIZED_BOTH);
+//        setUndecorated(true);
         setVisible(true);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
       //  f.setLocationRelativeTo(null);
@@ -53,7 +55,7 @@ public class GameWindow extends JFrame {
     }
 
     public void gameOver(){
-        customPanelObject.isGameOver = true;
+        GamePanel.IsGameOver = true;
     }
 
     public static void main(String[] args) {
