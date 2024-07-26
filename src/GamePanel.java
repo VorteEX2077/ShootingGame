@@ -46,7 +46,7 @@ public class GamePanel extends JPanel {
         enemyY = FLOOR_HEIGHT;
         enemyX = tile3 + tileWidth - 100;
         shootDistance = playerX + 200;
-        currentPlayerAnimation= Characters.IDLE;
+        currentPlayerAnimation = Characters.IDLE;
 
         initTiles();
         initListeners();
@@ -85,13 +85,16 @@ public class GamePanel extends JPanel {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if(isPlayerFalling) return;
+                if (isPlayerFalling) return;
 
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     playerY = FLOOR_HEIGHT;
                     leftOrRight = "RIGHT";
                     currentPlayerAnimation = Characters.RUNNING;
                 } else if (e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    if (jumpAnimation)
+                        return;
+
                     timer = 0;
                     jumpAnimation = true;
                     currentPlayerAnimation = Characters.JUMP;
@@ -104,7 +107,7 @@ public class GamePanel extends JPanel {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if(isPlayerFalling) return;
+                if (isPlayerFalling || jumpAnimation) return;
                 currentPlayerAnimation = Characters.IDLE;
             }
         });
@@ -122,9 +125,9 @@ public class GamePanel extends JPanel {
         super.paintComponent(g);
 
         isPlayerOnTile = checkPlayerOnTile();
-      //  System.out.println("Player Animation:" + currentPlayerAnimation);
+        //  System.out.println("Player Animation:" + currentPlayerAnimation);
 
-         if(!isPlayerFalling) {
+        if (!isPlayerFalling) {
             if (!isPlayerOnTile) {
                 isPlayerFalling = true;
                 currentPlayerAnimation = Characters.FALL;
@@ -132,7 +135,7 @@ public class GamePanel extends JPanel {
                 currentPlayerAnimation = Characters.DEATH;
             }
         }
-        soliderAnimation(g, currentPlayerAnimation);
+        playerAnimation(g, currentPlayerAnimation);
         enemyAnimation(g);
 
 //        System.out.println("player on tile: " + isPlayerOnTile);
@@ -151,15 +154,14 @@ public class GamePanel extends JPanel {
         }
     }
 
-    private void soliderAnimation(Graphics g, int animation) {
-        System.out.println("Player (x,y): " + playerX + "," + (playerY) + " " + getHeight());
+    private void playerAnimation(Graphics g, int animation) {
+        //System.out.println("Player (x,y): " + playerX + "," + (playerY));
 
         if (playerFrame >= character.getAnimationSize(animation) - 1) {
             playerFrame = 0;
-            if(animation == Characters.DEATH)
+            if (animation == Characters.DEATH)
                 playerFrame = character.getAnimationSize(animation) - 1;
-        }
-        else playerFrame = playerFrame + 1;
+        } else playerFrame = playerFrame + 1;
 
         if (animation == Characters.DEATH) {
             g.drawImage(character.getAnimation(Characters.DEATH).get(playerFrame), playerX, playerY + 50, 150,
@@ -176,17 +178,15 @@ public class GamePanel extends JPanel {
                         SOLIDER_HEIGHT, null);
             }
         } else if (animation == Characters.JUMP) {
+            System.out.println(timer);
             playerY = FLOOR_HEIGHT - timer;
-            playerX = playerX + timer - 7;
-            if (timer == 60)
+            if (timer >= 70) {
+                playerY = FLOOR_HEIGHT;
                 jumpAnimation = false;
-            else if (timer <= -10)
                 currentPlayerAnimation = Characters.IDLE;
-            if (jumpAnimation) timer = timer + 10;
-            else timer = timer - 10;
-
-            //System.out.println(playerY + " " + (FLOOR_HEIGHT + SOLIDER_HEIGHT));
-            if (playerY >= FLOOR_HEIGHT) playerY = FLOOR_HEIGHT;
+            } else {
+                timer = timer + 8;
+            }
 
             g.drawImage(character.getAnimation(Characters.JUMP).get(playerFrame), playerX, playerY, SOLIDER_WIDTH,
                     SOLIDER_HEIGHT, null);
