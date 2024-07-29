@@ -16,7 +16,7 @@ public class GameWindow extends JFrame {
             @Override
             public void run() {
                 lastTimeInMillis = System.currentTimeMillis();
-                while (!gamePanelObject.isGameOver) {
+                while (!GamePanel.IsGameOver) {
                     if (System.currentTimeMillis() - lastTimeInMillis >= 100) {
 
                         gamePanelObject.repaint();

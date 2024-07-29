@@ -20,7 +20,6 @@ public class GamePanel extends JPanel {
     int currentPlayerAnimation;
 
     boolean isPlayerOnTile;
-    boolean isGameOver;
     boolean isPlayerFalling;
 
     int timer;
@@ -60,11 +59,13 @@ public class GamePanel extends JPanel {
 
             @Override
             public void mousePressed(MouseEvent e) {
+                if(IsGameOver) return;
                 currentPlayerAnimation = Characters.SHOOT;
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
+                if(IsGameOver) return;
                 currentPlayerAnimation = Characters.IDLE;
             }
 
@@ -85,17 +86,14 @@ public class GamePanel extends JPanel {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (isPlayerFalling) return;
+                if (isPlayerFalling || jumpAnimation) return;
 
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     playerY = FLOOR_HEIGHT;
                     leftOrRight = "RIGHT";
                     currentPlayerAnimation = Characters.RUNNING;
                 } else if (e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_SPACE) {
-                    if (jumpAnimation)
-                        return;
-
-                    timer = 0;
+                    if (timer != 0) return;
                     jumpAnimation = true;
                     currentPlayerAnimation = Characters.JUMP;
                 } else if (e.getKeyCode() == KeyEvent.VK_A) {
@@ -108,6 +106,7 @@ public class GamePanel extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 if (isPlayerFalling || jumpAnimation) return;
+                timer = 0;
                 currentPlayerAnimation = Characters.IDLE;
             }
         });
@@ -178,14 +177,15 @@ public class GamePanel extends JPanel {
                         SOLIDER_HEIGHT, null);
             }
         } else if (animation == Characters.JUMP) {
-            System.out.println(timer);
             playerY = FLOOR_HEIGHT - timer;
-            if (timer >= 70) {
+            System.out.println(timer);
+            if (timer >= 110) {
                 playerY = FLOOR_HEIGHT;
                 jumpAnimation = false;
                 currentPlayerAnimation = Characters.IDLE;
             } else {
-                timer = timer + 8;
+                timer = timer + 25;
+                playerX = playerX + timer;
             }
 
             g.drawImage(character.getAnimation(Characters.JUMP).get(playerFrame), playerX, playerY, SOLIDER_WIDTH,
