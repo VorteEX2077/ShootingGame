@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 
 public class GamePanel extends JPanel {
 
@@ -32,6 +33,7 @@ public class GamePanel extends JPanel {
     String leftOrRight;
     int[][] tiles = new int[3][2];  // 2D Array Initialization
     Assets assets;
+    boolean isPlayerDead;
 
     public GamePanel() {
         setFocusable(true);
@@ -59,13 +61,13 @@ public class GamePanel extends JPanel {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                if(IsGameOver) return;
+                if (isPlayerDead) return;
                 currentPlayerAnimation = Characters.SHOOT;
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if(IsGameOver) return;
+                if (isPlayerDead) return;
                 currentPlayerAnimation = Characters.IDLE;
             }
 
@@ -86,7 +88,7 @@ public class GamePanel extends JPanel {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (isPlayerFalling || jumpAnimation) return;
+                if (isPlayerFalling || jumpAnimation || isPlayerDead) return;
 
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     playerY = FLOOR_HEIGHT;
@@ -105,7 +107,7 @@ public class GamePanel extends JPanel {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if (isPlayerFalling || jumpAnimation) return;
+                if (isPlayerFalling || jumpAnimation || isPlayerDead) return;
                 timer = 0;
                 currentPlayerAnimation = Characters.IDLE;
             }
@@ -123,14 +125,21 @@ public class GamePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        // System.out.println(playerY+ " " + " " + tiles[0][1] + isPlayerOnTile);
+
         isPlayerOnTile = checkPlayerOnTile();
         //  System.out.println("Player Animation:" + currentPlayerAnimation);
+      //  System.out.println(playerY - SOLIDER_HEIGHT + " " + enemyY + " " + playerX + SOLIDER_WIDTH);
+        g.setColor(Color.black);
 
-        if (!isPlayerFalling) {
+//        g.fillRect(enemyX, enemyY, SOLIDER_WIDTH, SOLIDER_HEIGHT);
+//        g.drawLine(playerX - 10, playerY, playerX - 10, playerY + SOLIDER_HEIGHT);
+
+        if (!isPlayerFalling && !jumpAnimation) {
             if (!isPlayerOnTile) {
                 isPlayerFalling = true;
                 currentPlayerAnimation = Characters.FALL;
-            } else if (playerX + SOLIDER_WIDTH >= enemyX) {
+            } else if (checkPlayerCollision()) {
                 currentPlayerAnimation = Characters.DEATH;
             }
         }
@@ -141,13 +150,13 @@ public class GamePanel extends JPanel {
         /* begin falling animation */
 
         /* Bounding boxes for testing */
-        g.setColor(Color.MAGENTA);
-        g.drawRect(playerX, playerY, SOLIDER_WIDTH, SOLIDER_HEIGHT);
-        g.setColor(Color.blue);
-        g.drawRect(enemyX, enemyY, SOLIDER_WIDTH, SOLIDER_HEIGHT);
+//        g.setColor(Color.MAGENTA);
+//        g.drawRect(playerX, playerY, SOLIDER_WIDTH, SOLIDER_HEIGHT);
+//        g.setColor(Color.blue);
+//        g.drawRect(enemyX, enemyY, SOLIDER_WIDTH, SOLIDER_HEIGHT);
         for (int i = 0; i <= 2; i++) {
-            g.setColor(Color.red);
-            g.drawLine(tiles[i][0], tiles[i][1] - 50, tiles[i][0] + tileWidth, tiles[i][1] - 50);
+           // g.setColor(Color.red);
+            //g.drawLine(tiles[i][0], tiles[i][1] - 50, tiles[i][0] + tileWidth, tiles[i][1] - 50);
             g.drawImage(character.getAnimation(Characters.TILES).get(0), tiles[i][0],
                     tiles[i][1], tileWidth, 100, null);
         }
@@ -165,6 +174,7 @@ public class GamePanel extends JPanel {
         if (animation == Characters.DEATH) {
             g.drawImage(character.getAnimation(Characters.DEATH).get(playerFrame), playerX, playerY + 50, 150,
                     50, null);
+            isPlayerDead = true;
             return;
         }
 
@@ -177,15 +187,15 @@ public class GamePanel extends JPanel {
                         SOLIDER_HEIGHT, null);
             }
         } else if (animation == Characters.JUMP) {
-            playerY = FLOOR_HEIGHT - timer;
-            System.out.println(timer);
-            if (timer >= 110) {
+            playerY = FLOOR_HEIGHT - timer - 40;
+            //System.out.println(timer);
+            if (timer >= 100) {
                 playerY = FLOOR_HEIGHT;
                 jumpAnimation = false;
                 currentPlayerAnimation = Characters.IDLE;
             } else {
-                timer = timer + 25;
-                playerX = playerX + timer;
+                timer = timer + 30;
+                playerX = playerX + timer - 10;
             }
 
             g.drawImage(character.getAnimation(Characters.JUMP).get(playerFrame), playerX, playerY, SOLIDER_WIDTH,
@@ -218,7 +228,14 @@ public class GamePanel extends JPanel {
         if (enemyFrame >= character.getAnimationSize(Characters.ENEMY_WALKING) - 1) {
             enemyFrame = 0;
         }
-        if (enemyHealth > 0) {
+        if(isPlayerDead){
+            BufferedImage a = character.getAnimation(Characters.ENEMY_IDLE).get(enemyFrame);
+            g.drawImage(a, enemyX, enemyY, SOLIDER_WIDTH, SOLIDER_HEIGHT, null);
+            System.out.println(enemyFrame);
+            enemyFrame = enemyFrame + 1;
+        }
+
+        if (enemyHealth > 0 && !isPlayerDead) {
             g.drawImage(character.getAnimation(Characters.ENEMY_WALKING).get(enemyFrame),
                     enemyX, enemyY, SOLIDER_WIDTH, SOLIDER_HEIGHT, null);
 
@@ -248,25 +265,25 @@ public class GamePanel extends JPanel {
 
     private boolean checkPlayerOnTile() {
         for (int i = 0; i < tiles.length; i++) {
-//            System.out.println(tiles[i][0]);
-
+//            System.out.println(tiles[i][1]);
             if ((playerX + SOLIDER_WIDTH / 2) >= tiles[i][0]
-                    && (playerX + SOLIDER_WIDTH / 2) <= (tiles[i][0] + tileWidth)) {
+                    && (playerX + SOLIDER_WIDTH / 2) <= (tiles[i][0] + tileWidth)
+                    && playerY + SOLIDER_HEIGHT - 10 == tiles[i][1]) {
                 return true;
             }
         }
         return false;
     }
 
-//    private void changePlayerAnimation(String action) {
-//        isPlayerRunning = false;
-//        isPlayerShooting = false;
-//        isPlayerJumping = false;
-//        isPlayerDead = false;
-//
-//        if(action.equals("LEFT")) isPlayerRunning = true;
-//        else if(action.equals("JUMP")) isPlayerJumping = true;
-//        else if(action.equals("DEAD")) isPlayerDead = true;
-//        else if(action.equals("SHOOT")) isPlayerShooting = true;
-//    }
+    private boolean checkPlayerCollision(){
+        if(enemyHealth > 0) {
+            Rectangle playerRec = new Rectangle(playerX, playerY, SOLIDER_WIDTH, SOLIDER_HEIGHT);
+            Rectangle rectangle = new Rectangle(enemyX, enemyY, SOLIDER_WIDTH, SOLIDER_HEIGHT);
+            return rectangle.contains(playerX, playerY) ||
+                    rectangle.contains(playerX + SOLIDER_WIDTH, playerY) ||
+                    rectangle.contains(playerX, playerY + SOLIDER_HEIGHT) ||
+                    rectangle.contains(playerX + SOLIDER_WIDTH, playerY + SOLIDER_HEIGHT);
+        }
+        return false;
+    }
 }

@@ -28,8 +28,6 @@ public class GameWindow extends JFrame {
 
         screenX = Toolkit.getDefaultToolkit().getScreenSize().width;
         screenY = Toolkit.getDefaultToolkit().getScreenSize().height;
-        screenX = 1280;
-        screenY = 720;
 
         gamePanelObject = new GamePanel();
         add(gamePanelObject);
@@ -41,10 +39,10 @@ public class GameWindow extends JFrame {
         // OR
 
         setSize(screenX, screenY);
-//        setExtendedState(JFrame.MAXIMIZED_BOTH);
-//        setUndecorated(true);
+       // setExtendedState(JFrame.MAXIMIZED_BOTH);
+       // setUndecorated(true);
         setVisible(true);
-        setResizable(false);
+        setResizable(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
       //  f.setLocationRelativeTo(null);
